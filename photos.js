@@ -66,6 +66,18 @@ var setupPhotos = (function ($) {
         return function (img) {
             var elm = document.createElement('div');
             elm.className = 'photo';
+            var btn = document.createElement('a');
+            var fileId = img.src.substring(img.src.lastIndexOf('/')+1,img.src.lastIndexOf('.'));
+            btn.id = fileId;
+            btn.setAttribute('href','#');
+            var icon = document.createElement('i');
+            if(localStorage.getItem(fileId)=='true'){
+                icon.className = "icon-heart icon-large";
+            }else{
+                icon.className = "icon-heart-empty icon-large";
+            }
+            btn.appendChild(icon);
+            elm.appendChild(btn);
             elm.appendChild(img);
             holder.appendChild(elm);
         };
