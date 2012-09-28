@@ -14,8 +14,12 @@
     <script src="photos.js"></script>
     <script>
   		var tags = ['squirrel', 'cat'];
-  		var setupCallback = function (err, result) {
-        if (err) { return console.error(err); }
+  		var setupCallback = function (results, error) {
+        if(error){ 
+          return console.error(error); 
+        }
+        
+        console.log(results);
       };
       setupPhotos(tags, setupCallback);
 

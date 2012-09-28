@@ -1,13 +1,6 @@
 /*global jQuery*/
 
 var setupPhotos = (function ($) {
-    function each (items, callback) {
-        var i;
-        for (i = 0; i < items.length; i += 1) {
-            setTimeout(callback.bind(this, items[i]), 0);
-        }
-    }
-
     function loadAllPhotos (tags, max, callback) {   
   		var photos = [];
   	  var requests =  $.map(tags, function(tag){
@@ -32,6 +25,9 @@ var setupPhotos = (function ($) {
 		  $.when.apply(null,requests)
 			  .done(function(){
             callback(photos);
+  			})
+  			.fail(function(){
+  			  callback(null,'Network error');
   			});
 		
     }
@@ -54,6 +50,7 @@ var setupPhotos = (function ($) {
   		  $(this).toggleClass('icon-heart icon-heart-empty');
   		  return false;
   		});
+  		return elm;
     }
 
     // ----
@@ -61,20 +58,28 @@ var setupPhotos = (function ($) {
     var max_per_tag = 5;
     return function setup (tags, callback) {
 		  var renderItem = function (items,err) {
-        if (err){ 
+        if(err && callback){ 
   				return callback(err); 
   			}
-  			
+  			var photoElements = [];
         var renderPhoto = function(photo) {
+            var deferred = $.Deferred()
             var img = new Image();
+            img.onload = function(){
+               var photoElement = imageAppender(img);
+               photoElements.push(photoElement);
+               deferred.resolve(photoElement);
+            }
             img.src = photo;
-            return img;
+            return deferred.promise();
         };
-        
-        each(items.map(renderPhoto), imageAppender);
-        if(callback){
-  				  callback();
-  		  }
+            
+        $.when.apply(null,items.map(renderPhoto))
+  			  .done(function(){
+              if(callback){
+        				  callback(photoElements);
+        		  }
+    			});
       };
 		
       loadAllPhotos(tags, max_per_tag, renderItem);
