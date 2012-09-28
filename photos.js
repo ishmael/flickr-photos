@@ -63,7 +63,7 @@ var setupPhotos = (function ($) {
   			}
   			var photoElements = [];
         var renderPhoto = function(photo) {
-            var deferred = $.Deferred()
+            var deferred = $.Deferred();
             var img = new Image();
             img.onload = function(){
                var photoElement = imageAppender(img);
