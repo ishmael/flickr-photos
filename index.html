@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Photos</title>
-    <link href="photos.css" rel="stylesheet" type="text/css" />
-    <link href="font-awesome.css" rel="stylesheet" type="text/css" />    
+    <link href="photos.css" rel="stylesheet" type="text/css" >
+    <link href="font-awesome.css" rel="stylesheet" type="text/css" >    
   </head>
   <body>
     <h1>Photos</h1>
@@ -13,19 +13,11 @@
 	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="photos.js"></script>
     <script>
-        $('#photos').on('click','a',function(evt){
-          evt.preventDefault();
-          if(localStorage.getItem(this.id)=='true'){
-            localStorage.setItem(this.id,false);
-          }else{
-            localStorage.setItem(this.id,true);
-          }
-          $(this).find('i').toggleClass('icon-heart icon-heart-empty');
-          return false;
-        });
-        setupPhotos(['squirrel', 'cat'], function (err, result) {
-            if (err) { return console.error(err); }
-        });
+  		var tags = ['squirrel', 'cat'];
+  		var setupCallback = function (err, result) {
+        if (err) { return console.error(err); }
+      };
+      setupPhotos(tags, setupCallback);
 
     </script>
   </body>

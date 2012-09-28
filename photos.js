@@ -8,90 +8,75 @@ var setupPhotos = (function ($) {
         }
     }
 
-    function flatten (items) {
-        return items.reduce(function (a, b) {
-            return a.concat(b);
-        });
-    }
-
-    function loadPhotosByTag (tag, max, callback) {
-        var photos = [];
-        var callback_name = 'callback_' + Math.floor(Math.random() * 100000);
-
-        window[callback_name] = function (data) {
-            delete window[callback_name];
+    function loadAllPhotos (tags, max, callback) {   
+  		var photos = [];
+  	  var requests =  $.map(tags, function(tag){
+        return $.ajax({
+  				url: 'http://api.flickr.com/services/feeds/photos_public.gne',
+  				data: {
+  					tags: tag,
+  					lang: 'en-us',
+  					format: 'json'
+  				},
+  				dataType: 'jsonp',
+  				jsonp: "jsoncallback",
+  				success: function(data){
             var i;
-            for (i = 0; i < max; i += 1) {
-                photos.push(data.items[i].media.m);
-            }
-            callback(null, photos);
-        };
-
-        $.ajax({
-            url: 'http://api.flickr.com/services/feeds/photos_public.gne',
-            data: {
-                tags: tag,
-                lang: 'en-us',
-                format: 'json',
-                jsoncallback: callback_name
-            },
-            dataType: 'jsonp'
-        });
+    				for (i = 0; i < max; i += 1) {
+    					photos.push(data.items[i].media.m);
+    				}
+  				}
+  			}).promise();
+      });
+		
+		  $.when.apply(null,requests)
+			  .done(function(){
+            callback(photos);
+  			});
+		
     }
 
-    function loadAllPhotos (tags, max, callback) {
-        var results = [];
-        function handleResult (err, photos) {
-            if (err) { return callback(err); }
-
-            results.push(photos);
-            if (results.length === tags.length) {
-                callback(null, flatten(results));
-            }
-        }
-
-        each(tags, function (tag) {
-            loadPhotosByTag(tag, max, handleResult);
-        });
-    }
-
-    function renderPhoto (photo) {
-        var img = new Image();
-        img.src = photo;
-        return img;
-    }
-
-    function imageAppender (id) {
-        var holder = document.getElementById(id);
-        return function (img) {
-            var elm = document.createElement('div');
-            elm.className = 'photo';
-            var btn = document.createElement('a');
-            var fileId = img.src.substring(img.src.lastIndexOf('/')+1,img.src.lastIndexOf('.'));
-            btn.id = fileId;
-            btn.setAttribute('href','#');
-            var icon = document.createElement('i');
-            if(localStorage.getItem(fileId)=='true'){
-                icon.className = "icon-heart icon-large";
-            }else{
-                icon.className = "icon-heart-empty icon-large";
-            }
-            btn.appendChild(icon);
-            elm.appendChild(btn);
-            elm.appendChild(img);
-            holder.appendChild(elm);
-        };
+    function imageAppender (img) {
+  		var fileId = img.src.substring(img.src.lastIndexOf('/')+1,img.src.lastIndexOf('.'));
+  		var elm = document.createElement('div');
+  		elm.className = 'photo';
+  		var icon = document.createElement('div');
+  		icon.id = fileId;
+  		icon.className = "icon-large " + ((localStorage.getItem(fileId)=='true') ? "icon-heart" :	"icon-heart-empty");
+  		elm.appendChild(img);
+  		elm.appendChild(icon);
+  		var holder = document.getElementById('photos');
+  		holder.appendChild(elm);
+		
+  		$(icon).on('click',function(event){
+  		  event.preventDefault();
+  		  localStorage.setItem(this.id,!(localStorage.getItem(this.id)=='true'));
+  		  $(this).toggleClass('icon-heart icon-heart-empty');
+  		  return false;
+  		});
     }
 
     // ----
     
     var max_per_tag = 5;
     return function setup (tags, callback) {
-        loadAllPhotos(tags, max_per_tag, function (err, items) {
-            if (err) { return callback(err); }
-
-            each(items.map(renderPhoto), imageAppender('photos'));
-            callback();
-        });
+		  var renderItem = function (items,err) {
+        if (err){ 
+  				return callback(err); 
+  			}
+  			
+        var renderPhoto = function(photo) {
+            var img = new Image();
+            img.src = photo;
+            return img;
+        };
+        
+        each(items.map(renderPhoto), imageAppender);
+        if(callback){
+  				  callback();
+  		  }
+      };
+		
+      loadAllPhotos(tags, max_per_tag, renderItem);
     };
 }(jQuery));
