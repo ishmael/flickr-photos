@@ -81,7 +81,6 @@
         		  }
     			});
       }.bind(this);
-		
       loadAllPhotos(tags, max_per_tag, renderItem);
   		return this;
     };
