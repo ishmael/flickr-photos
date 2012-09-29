@@ -7,10 +7,8 @@
   </head>
   <body>
     <h1>Photos</h1>
-    
     <div id="photos"></div>
-
-	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="photos.js"></script>
     <script>
   		var tags = ['squirrel', 'cat'];
@@ -18,10 +16,10 @@
         if(error){ 
           return console.error(error); 
         }
-        
-        console.log(results);
+        $('h1').text('Photos of ' + tags.join(' and '));
+
       };
-      setupPhotos(tags, setupCallback);
+      $('#photos').flickrPhotos(tags, setupCallback);
 
     </script>
   </body>
