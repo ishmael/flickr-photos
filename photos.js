@@ -19,7 +19,7 @@ var setupPhotos = (function ($) {
     					photos.push(data.items[i].media.m);
     				}
   				}
-  			}).promise();
+  			});
       });
 		
 		  $.when.apply(null,requests)
@@ -43,13 +43,16 @@ var setupPhotos = (function ($) {
   		elm.appendChild(icon);
   		var holder = document.getElementById('photos');
   		holder.appendChild(elm);
-		
-  		$(icon).on('click',function(event){
+		  
+		  var favoriteClick =  function(event){
   		  event.preventDefault();
   		  localStorage.setItem(this.id,!(localStorage.getItem(this.id)=='true'));
   		  $(this).toggleClass('icon-heart icon-heart-empty');
   		  return false;
-  		});
+  		};
+  		
+  		$(icon).on('click',favoriteClick);
+  		
   		return elm;
     }
 
@@ -70,6 +73,7 @@ var setupPhotos = (function ($) {
                photoElements.push(photoElement);
                deferred.resolve(photoElement);
             }
+            img.onerror = deferred.reject();
             img.src = photo;
             return deferred.promise();
         };
