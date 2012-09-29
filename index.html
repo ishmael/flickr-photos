@@ -17,7 +17,7 @@
           return console.error(error); 
         }
         $('h1').text('Photos of ' + tags.join(' and '));
-
+        //console.log('finished');
       };
       $('#photos').flickrPhotos(tags, setupCallback);
 

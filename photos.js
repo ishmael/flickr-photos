@@ -1,5 +1,4 @@
 /*global jQuery*/
-
 (function ($) {
     function loadAllPhotos (tags, max, callback) {   
   		var photos = [];
@@ -56,32 +55,36 @@
     
     var max_per_tag = 5;
     $.fn.flickrPhotos = function(tags, callback) {
-		  var renderItem = function (items,err) {
-        if(err && callback){ 
-  				return callback(err); 
-  			}
-  			var photoElements = [];
-        var renderPhoto = function(photo) {
-            var deferred = $.Deferred();
-            var img = new Image();
-            img.onload = function(){
-               var photoElement = imageAppender.call(this,img);
-               photoElements.push(photoElement);
-               deferred.resolve(photoElement);
-            }.bind(this);
-            img.onerror = deferred.reject;
-            img.src = photo;
-            return deferred.promise();
-        }.bind(this);
-            
-        $.when.apply(null,items.map(renderPhoto))
-  			  .done(function(){
-              if(callback){
-        				  callback(photoElements);
-        		  }
-    			});
-      }.bind(this);
-      loadAllPhotos(tags, max_per_tag, renderItem);
-  		return this;
+      return this.each(function(){
+        var element = $(this);
+        var renderItem = function (items,err) {
+          if(err && callback){ 
+    				return callback(err); 
+    			}
+    			var photoElements = [];
+          var renderPhoto = function(photo) {
+              var deferred = $.Deferred();
+              var img = new Image();
+              img.onload = function(){
+                 var photoElement = imageAppender.call(element,img);
+                 photoElements.push(photoElement);
+                 deferred.resolve(photoElement);
+              }
+              img.onerror = deferred.reject;
+              img.src = photo;
+              return deferred.promise();
+          };
+
+          $.when.apply(null,items.map(renderPhoto))
+    			  .done(function(){
+                if(callback){
+          				  callback(photoElements);
+          		  }
+      			});
+        };
+        loadAllPhotos(tags, max_per_tag, renderItem);        
+      });
+
+  		
     };
 }(jQuery));
