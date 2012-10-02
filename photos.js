@@ -45,7 +45,7 @@
         .addClass("icon-large " + ((localStorage.getItem(fileId)=='true') ? "icon-heart" :	"icon-heart-empty"))
   			.on('click',favoriteClick);
   		
-  		$photo.append(img,$icon);
+  		$photo.append($icon);
   		this.append($photo);
   		
   		return $photo;
@@ -65,13 +65,16 @@
           var renderPhoto = function(photo) {
               var deferred = $.Deferred();
               var img = new Image();
+			        var photoElement = imageAppender.call(element,img);
               img.onload = function(){
-                 var photoElement = imageAppender.call(element,img);
-                 photoElements.push(photoElement);
-                 deferred.resolve(photoElement);
+                photoElement.prepend(img);
+				        photoElements.push(photoElement);
+                deferred.resolve(photoElement);
               }
               img.onerror = deferred.reject;
-              img.src = photo;
+			  setTimeout(function(){
+				img.src = photo;
+			  },0);
               return deferred.promise();
           };
 
