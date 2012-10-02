@@ -31,8 +31,8 @@
 		
     }
 
-    function imageAppender (img) {
-  		var fileId = img.src.substring(img.src.lastIndexOf('/')+1,img.src.lastIndexOf('.'));
+    function imageAppender (photoURL) {
+  		var fileId = photoURL.substring(photoURL.lastIndexOf('/')+1,photoURL.lastIndexOf('.'));
 		  var favoriteClick =  function(event){
   		  event.preventDefault();
   		  localStorage.setItem(this.id,!(localStorage.getItem(this.id)=='true'));
@@ -65,7 +65,7 @@
           var renderPhoto = function(photo) {
               var deferred = $.Deferred();
               var img = new Image();
-			        var photoElement = imageAppender.call(element,img);
+			        var photoElement = imageAppender.call(element,photo);
               img.onload = function(){
                 photoElement.prepend(img);
 				        photoElements.push(photoElement);
