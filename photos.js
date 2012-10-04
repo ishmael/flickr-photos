@@ -55,7 +55,7 @@
 	
 	function isFavorite(imgId){
 		var currentCookieValue = getCookieValue();
-		if(currentCookieValue){
+		if(currentCookieValue.length){
 			return (currentCookieValue.indexOf(imgId) != -1) ;
 		}
 		else{
@@ -79,7 +79,9 @@
 					return current_favorites;
 				}
 			}
+			return [];
 		}
+		return [];
 	}
 	
 	function setFavorite(imgId){
@@ -88,14 +90,9 @@
 		}else{
 			current_favorites.push(imgId);
 		}
-		setCookie(current_favorites);
-	}
-	
-	function setCookie(value){
 		var dateExpires = new Date();
-		//default to 7 days of sliding expiration
 		dateExpires.setDate(dateExpires.getDate() + days_to_expire_cookie);
-		document.cookie = cookie_name + "="+ escape(value) + ";expires=" + dateExpires.toGMTString();
+		document.cookie = cookie_name + "="+ escape(current_favorites) + ";expires=" + dateExpires.toGMTString();
 	}
     
     var max_per_tag = 5;
