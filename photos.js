@@ -69,16 +69,15 @@
 		}else if(document.cookie)
 		{
 			var cookies = document.cookie.split(';');
-			var i;
-			for(i=0;i<cookies.length;i++){
-				var name= cookies[i].substring(0,cookies[i].indexOf('='));
+			$.each(cookies,function(index,cookie){
+				var name= cookie.substring(0,cookie.indexOf('='));
+				cookie = cookie.split(';')[0];
 				if(name == cookie_name){
-					var cookie = cookies[i].split(';')[0];
 					var value = unescape(cookie.substring(cookie.indexOf('=')+1));
 					current_favorites = value.split(',');
 					return current_favorites;
 				}
-			}
+			});
 			return [];
 		}
 		return [];
